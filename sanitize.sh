@@ -1,34 +1,40 @@
 #!/usr/bin/env bash
 
-files=("/home/vinicius/Downloads/perf/65825-chrono-trigger-snes-screenshot-map-1000-ad-presents.png"
-    "/home/vinicius/Downloads/perf/Castlevania_-_Aria_of_Sorrow_2012_12_23_22_24_42_958.png"
-    "/home/vinicius/Downloads/perf/girl1_1.png"
-    "/home/vinicius/Downloads/perf/jabier.png"
-    "/home/vinicius/Downloads/perf/Secret of Mana.png"
-    "/home/vinicius/Downloads/perf/sma_toad_input.png"
-    "/home/vinicius/Downloads/perf/smw2_yoshi_01_input.png"
-    "/home/vinicius/Downloads/perf/smw_boo_input.png"
-    "/home/vinicius/Downloads/perf/smw_bowser_input.png"
-    "/home/vinicius/Downloads/perf/splines test.png"
-    "/home/vinicius/Downloads/perf/win31_386_input.png")
+## This will obviously not work in this form. It is usefull
+## to keep for future regression tests though. sanitizier can
+## also be replaced with VALGRID.
 
-#files=("/home/vinicius/Downloads/perf/win31_386_input.png")
+
+## These files also do not exist.
+files=("brik_at_finn.png"
+       "brik_pokemon_pikachu.png"
+       "pinterest_at_finn.png"
+       "pinterest_ctr_frog.png"
+       "sma_toad_input.png"
+       "smw2_yoshi_01_input.png"
+       "smw_boo_input.png"
+       "smw_bowser_input.png"
+       "win31_386_input.png")
+
 
 run_depixelize() {
     BIN="$(realpath src/depixelize-kopf2011/depixelize-kopf2011)"
 
     for f in "${files[@]}"; do
-        echo "[${1}]" "${BIN}" "$f" -o /dev/null -v
-        "${BIN}" "$f" -o /dev/null -v
 
-        echo "[${1}]" "${BIN}" "$f" -o /dev/null -g
-        "${BIN}" "$f" -o /dev/null -g
+        filename="$(realpath ${2}/sample_inputs/${f})"
+        
+        echo "[${1}]" "${BIN}" "$filename" -o /dev/null -v
+        "${BIN}" "$filename" -o /dev/null -v
 
-        echo "[${1}]" "${BIN}" "$f" -o /dev/null -n
-        "${BIN}" "$f" -o /dev/null -n
+        echo "[${1}]" "${BIN}" "$filename" -o /dev/null -g
+        "${BIN}" "$filename" -o /dev/null -g
 
-        echo "[${1}]" "${BIN}" "$f" -o /dev/null
-        "${BIN}" "$f" -o /dev/null
+        echo "[${1}]" "${BIN}" "$filename" -o /dev/null -n
+        "${BIN}" "$filename" -o /dev/null -n
+
+        echo "[${1}]" "${BIN}" "$filename" -o /dev/null
+        "${BIN}" "$filename" -o /dev/null
     done
 }
 
@@ -44,7 +50,7 @@ addresssanitizer() {
     cmake -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_BUILD_TYPE="Debug" -DCMAKE_CXX_FLAGS="-fsanitize=address -fno-omit-frame-pointer -O1 -fno-optimize-sibling-calls" ../..
     make
 
-    run_depixelize "ADDRESS"
+    run_depixelize "ADDRESS" "../.."
 
     popd
 }
@@ -56,7 +62,7 @@ memorysanitizer() {
     cmake -DCMAKE_CXX_COMPILER="clang++" -DCMAKE_BUILD_TYPE="Debug" -DCMAKE_CXX_FLAGS="-fsanitize=memory -fno-omit-frame-pointer -O1 -fno-optimize-sibling-calls" ../..
     make
 
-    run_depixelize "MEMORY"
+    run_depixelize "MEMORY" "../.."
 
     popd
 }

@@ -33,6 +33,7 @@
 #define SEEN_SVG_PATH_RENDER_H
 
 #include <2geom/pathvector.h>
+#include <2geom/bezier-curve.h>
 #include <ostream>
 
 namespace Geom {
@@ -67,37 +68,37 @@ inline void render_svg_path(std::ostream &out, PathVector const &source)
               TODO: every time a new C++ version is out, check if a type switch
               syntax was added and update the code below.
              */
-            if ( BezierCurve<1> const *curve
-                 = dynamic_cast<BezierCurve<1> const*>(&*it2) ) {
+            BezierCurve const *curve
+                = dynamic_cast<BezierCurve const*>(&*it2);
+            
+            if ( curve && (curve->order() == 1)) {
                 // it's a line
 
                 out << " L";
 
-                std::vector<Point> points = curve->points();
+                std::vector<Point> points = curve->controlPoints();
                 for ( std::vector<Point>::iterator it3 = points.begin() + 1,
                           end3 = points.end() ; it3 != end3 ; ++it3 ) {
                     out << ' ';
                     render_point(out, *it3);
                 }
-            } else if ( BezierCurve<2> const *curve
-                 = dynamic_cast<BezierCurve<2> const*>(&*it2) ) {
+            } else if  ( curve && (curve->order() == 2)) {
                 // it's a quadratic Bézier curve
 
                 out << " Q";
 
-                std::vector<Point> points = curve->points();
+                std::vector<Point> points = curve->controlPoints();
                 for ( std::vector<Point>::iterator it3 = points.begin() + 1,
                           end3 = points.end() ; it3 != end3 ; ++it3 ) {
                     out << ' ';
                     render_point(out, *it3);
                 }
-            } else if ( BezierCurve<3> const *curve
-                 = dynamic_cast<BezierCurve<3> const*>(&*it2) ) {
+            } else if  ( curve && (curve->order() == 3)) {
                 // it's a cubic Bézier curve
 
                 out << " C";
 
-                std::vector<Point> points = curve->points();
+                std::vector<Point> points = curve->controlPoints();
                 for ( std::vector<Point>::iterator it3 = points.begin() + 1,
                           end3 = points.end() ; it3 != end3 ; ++it3 ) {
                     out << ' ';

@@ -17,14 +17,16 @@ link_directories(
 
 include_directories(
   ${GDKMM_INCLUDE_DIRS}
-  ${2GEOM_INCLUDE_DIRS})
+  ${2GEOM_INCLUDE_DIRS}
+  ${GSL_INCLUDE_DIRS})
 
 add_library(${PROJECT_NAME}
   ${lib_SRC})
 
 target_link_libraries(${PROJECT_NAME}
   ${GDKMM_LIBRARIES}
-  ${2GEOM_LIBRARIES})
+  ${2GEOM_LIBRARIES}
+  ${GSL_LIBRARIES})
 
 # Configure options
 option(BUILD_BINARIES
